@@ -1,0 +1,54 @@
+{% import "_includes/forms" as forms %}
+
+{{
+    forms.lightswitchField({
+        name: 'adminCanOverride',
+        label: 'Admins can skip all deletion policies'|t('restrict-deletion'),
+        on: settings.adminCanOverride,
+        fieldClass: 'first'
+    })
+}}
+
+<h2>{{ 'Restriction policies'|t('restrict-deletion') }}</h2>
+
+{% for section in craft.app.sections.allSections %}
+    {{
+        forms.selectField({
+            name: 'policies[' ~ section.uid ~ ']',
+            label: 'Section {name}'|t('restrict-deletion', {name: section.name}),
+            value: settings.policies[section.uid] ?? 'none',
+            options: policies
+        })
+    }}
+{% endfor %}
+
+{% for group in craft.app.categories.allGroups %}
+    {{
+        forms.selectField({
+            name: 'policies[' ~ group.uid ~ ']',
+            label: 'Category group {name}'|t('restrict-deletion', {name: group.name}),
+            value: settings.policies[group.uid] ?? 'none',
+            options: policies
+        })
+    }}
+{% endfor %}
+
+{% for volume in craft.app.volumes.allVolumes %}
+    {{
+        forms.selectField({
+            name: 'policies[' ~ volume.uid ~ ']',
+            label: 'Volume {name}'|t('restrict-deletion', {name: volume.name}),
+            value: settings.policies[volume.uid] ?? 'none',
+            options: policies
+        })
+    }}
+{% endfor %}
+
+{{
+    forms.selectField({
+        name: 'userPolicy',
+        label: 'Users'|t('restrict-deletion'),
+        value: settings.userPolicy,
+        options: policies
+    })
+}}

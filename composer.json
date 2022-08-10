@@ -1,0 +1,36 @@
+{
+    "name": "ryssbowh/craft-restrict-deletions",
+    "description": "Restrict deletion of used elements",
+    "type": "craft-plugin",
+    "version": "1.0",
+    "keywords": [
+        "cms",
+        "craftcms",
+        "restrict",
+        "delete",
+        "deletion"
+    ],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "The Web Puzzlers",
+            "homepage": "https://github.com/ryssbowh"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^4.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ryssbowh\\RestrictDeletion\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Restrict element deletions",
+        "handle": "restrict-deletion",
+        "developer": "The Web Puzzlers",
+        "developerUrl": "https://github.com/ryssbowh",
+        "documentationUrl": "https://github.com/ryssbowh/craft-restrict-deletion",
+        "class": "Ryssbowh\\RestrictDeletion\\RestrictDeletion"
+    }
+}
