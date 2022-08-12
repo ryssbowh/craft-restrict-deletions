@@ -1,8 +1,7 @@
 {
     "name": "ryssbowh/craft-restrict-deletions",
-    "description": "Restrict deletion of used elements",
+    "description": "Restrict deletion of elements when they are referenced in other elements",
     "type": "craft-plugin",
-    "version": "1.0",
     "keywords": [
         "cms",
         "craftcms",
@@ -10,7 +9,7 @@
         "delete",
         "deletion"
     ],
-    "license": "proprietary",
+    "license": "MIT",
     "authors": [
         {
             "name": "The Web Puzzlers",
@@ -18,7 +17,7 @@
         }
     ],
     "require": {
-        "craftcms/cms": "^4.0"
+        "craftcms/cms": "^3.5"
     },
     "autoload": {
         "psr-4": {
@@ -26,7 +25,7 @@
         }
     },
     "extra": {
-        "name": "Restrict element deletions",
+        "name": "Restrict related deletions",
         "handle": "restrict-deletion",
         "developer": "The Web Puzzlers",
         "developerUrl": "https://github.com/ryssbowh",

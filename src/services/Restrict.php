@@ -5,6 +5,7 @@ namespace Ryssbowh\RestrictDeletion\services;
 use Ryssbowh\RestrictDeletion\RestrictDeletion;
 use craft\base\Component;
 use craft\base\Element;
+use craft\commerce\elements\Product;
 use craft\db\Query;
 use craft\elements\Asset;
 use craft\elements\Category;
@@ -64,6 +65,17 @@ class Restrict extends Component
     }
 
     /**
+     * Can a product be deleted
+     * 
+     * @param  Product $category
+     * @return bool
+     */
+    public function canDeleteProduct(Product $product): bool
+    {
+        return $this->canDeleteElement($product, $product->type->uid);
+    }
+
+    /**
      * Can an element be deleted
      * 
      * @param  Element $element
@@ -74,14 +86,21 @@ class Restrict extends Component
     {
         $user = \Craft::$app->user;
         $settings = RestrictDeletion::$plugin->settings;
-        if ($user->isAdmin and $settings->adminCanOverride) {
+        if ($settings->disableForFrontRequests and \Craft::$app->request->getIsSiteRequest()) {
             return true;
         }
-        if ($user->checkPermission('ignoreDeletionRestriction:' . $uid)) {
+        if ($settings->disableForConsoleRequests and \Craft::$app->request->getIsConsoleRequest()) {
+            return true;
+        }
+        if ($user->isAdmin) {
+            if ($settings->adminCanOverride) {
+                return true;
+            }
+        } else if ($user->checkPermission('ignoreDeletionRestriction:' . $uid)) {
             return true;
         }
         $policy = $settings->getPolicy($uid);
-        return $this->isRelated($element, $policy);
+        return !$this->isRelated($element, $policy);
     }
 
     /**
