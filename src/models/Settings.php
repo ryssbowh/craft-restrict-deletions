@@ -23,6 +23,16 @@ class Settings extends Model
     public $adminCanOverride = false;
 
     /**
+     * @var boolean
+     */
+    public $disableForFrontRequests = false;
+
+    /**
+     * @var boolean
+     */
+    public $disableForConsoleRequests = false;
+
+    /**
      * Get the policy for a uid (section, category group, volume or 'users')
      * 
      * @param  string $uid

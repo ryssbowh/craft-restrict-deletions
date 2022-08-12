@@ -9,24 +9,42 @@
     })
 }}
 
+{{
+    forms.lightswitchField({
+        name: 'disableForFrontRequests',
+        label: "Don't apply restrictions to front end requests"|t('restrict-deletion'),
+        on: settings.disableForFrontRequests
+    })
+}}
+
+{{
+    forms.lightswitchField({
+        name: 'disableForFrontRequests',
+        label: "Don't apply restrictions to console requests"|t('restrict-deletion'),
+        on: settings.disableForConsoleRequests
+    })
+}}
+
 <h2>{{ 'Restriction policies'|t('restrict-deletion') }}</h2>
 
 {% for section in craft.app.sections.allSections %}
-    {{
-        forms.selectField({
-            name: 'policies[' ~ section.uid ~ ']',
-            label: 'Section {name}'|t('restrict-deletion', {name: section.name}),
-            value: settings.policies[section.uid] ?? 'none',
-            options: policies
-        })
-    }}
+    {% if section.type != 'single' %}
+        {{
+            forms.selectField({
+                name: 'policies[' ~ section.uid ~ ']',
+                label: 'Entries in section {name}'|t('restrict-deletion', {name: section.name}),
+                value: settings.policies[section.uid] ?? 'none',
+                options: policies
+            })
+        }}
+    {% endif %}
 {% endfor %}
 
 {% for group in craft.app.categories.allGroups %}
     {{
         forms.selectField({
             name: 'policies[' ~ group.uid ~ ']',
-            label: 'Category group {name}'|t('restrict-deletion', {name: group.name}),
+            label: 'Categories in group {name}'|t('restrict-deletion', {name: group.name}),
             value: settings.policies[group.uid] ?? 'none',
             options: policies
         })
@@ -37,12 +55,25 @@
     {{
         forms.selectField({
             name: 'policies[' ~ volume.uid ~ ']',
-            label: 'Volume {name}'|t('restrict-deletion', {name: volume.name}),
+            label: 'Assets in volume {name}'|t('restrict-deletion', {name: volume.name}),
             value: settings.policies[volume.uid] ?? 'none',
             options: policies
         })
     }}
 {% endfor %}
+
+{% if craft.app.plugins.isPluginInstalled('commerce') %}
+    {% for type in craft.commerce.productTypes.allProductTypes %}
+        {{
+            forms.selectField({
+                name: 'policies[' ~ type.uid ~ ']',
+                label: 'Product of type {name}'|t('restrict-deletion', {name: type.name}),
+                value: settings.policies[type.uid] ?? 'none',
+                options: policies
+            })
+        }}
+    {% endfor %}
+{% endif %}
 
 {{
     forms.selectField({

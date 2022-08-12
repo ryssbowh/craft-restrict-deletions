@@ -7,6 +7,7 @@ use Ryssbowh\RestrictDeletion\services\Restrict;
 use craft\base\Element;
 use craft\base\Model;
 use craft\base\Plugin;
+use craft\commerce\elements\Product;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
@@ -64,6 +65,11 @@ class RestrictDeletion extends Plugin
             if ($class == User::class and !$service->canDeleteUser($event->sender)) {
                 $event->isValid = false;
             }
+            if (\Craft::$app->plugins->isPluginInstalled('commerce')) {
+                if ($class == Product::class and !$service->canDeleteProduct($event->sender)) {
+                    $event->isValid = false;
+                }
+            }
         });
         Event::on(Element::class, Element::EVENT_AUTHORIZE_DELETE, function (Event $event) {
             if (ElementHelper::isDraftOrRevision($event->sender)) {
@@ -82,6 +88,11 @@ class RestrictDeletion extends Plugin
             }
             if ($class == User::class and !$service->canDeleteUser($event->sender)) {
                 $event->authorized = false;
+            }
+            if (\Craft::$app->plugins->isPluginInstalled('commerce')) {
+                if ($class == Product::class and !$service->canDeleteProduct($event->sender)) {
+                    $event->authorized = false;
+                }
             }
         });
     }
@@ -162,6 +173,8 @@ class RestrictDeletion extends Plugin
                     $newPerm['permissions'][$name]['nested']['deleteCategories:' . $uid]['nested']['ignoreDeletionRestriction:' . $uid] = $ignorePermission;
                 } else if ($subname == 'deleteUsers') {
                     $newPerm['permissions']['deleteUsers']['nested']['ignoreDeletionRestriction:users'] = $ignorePermission;
+                } else if ($subname == 'commerce-editProductType') {
+                    $newPerm['permissions'][$name]['nested']['commerce-deleteProducts:' . $uid]['nested']['ignoreDeletionRestriction:' . $uid] = $ignorePermission;
                 }
             }
             $newPerms[] = $newPerm;
