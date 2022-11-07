@@ -13,6 +13,7 @@ use craft\elements\Category;
 use craft\elements\Entry;
 use craft\elements\User;
 use craft\helpers\ElementHelper;
+use craft\services\Elements;
 use craft\services\UserPermissions;
 use yii\base\Event;
 
@@ -65,32 +66,32 @@ class RestrictDeletion extends Plugin
             if ($class == User::class and !$service->canDeleteUser($event->sender)) {
                 $event->isValid = false;
             }
-            if (\Craft::$app->plugins->isPluginInstalled('commerce')) {
+            if (\Craft::$app->plugins->isPluginEnabled('commerce')) {
                 if ($class == Product::class and !$service->canDeleteProduct($event->sender)) {
                     $event->isValid = false;
                 }
             }
         });
-        Event::on(Element::class, Element::EVENT_AUTHORIZE_DELETE, function (Event $event) {
-            if (ElementHelper::isDraftOrRevision($event->sender)) {
+        Event::on(Elements::class, Elements::EVENT_AUTHORIZE_DELETE, function (Event $event) {
+            if (ElementHelper::isDraftOrRevision($event->element)) {
                 return;
             }
-            $class = get_class($event->sender);
+            $class = get_class($event->element);
             $service = RestrictDeletion::$plugin->restrict;
-            if ($class == Entry::class and !$service->canDeleteEntry($event->sender)) {
+            if ($class == Entry::class and !$service->canDeleteEntry($event->element)) {
                 $event->authorized = false;
             }
-            if ($class == Category::class and !$service->canDeleteCategory($event->sender)) {
+            if ($class == Category::class and !$service->canDeleteCategory($event->element)) {
                 $event->authorized = false;
             }
-            if ($class == Asset::class and !$service->canDeleteAsset($event->sender)) {
+            if ($class == Asset::class and !$service->canDeleteAsset($event->element)) {
                 $event->authorized = false;
             }
-            if ($class == User::class and !$service->canDeleteUser($event->sender)) {
+            if ($class == User::class and !$service->canDeleteUser($event->element)) {
                 $event->authorized = false;
             }
-            if (\Craft::$app->plugins->isPluginInstalled('commerce')) {
-                if ($class == Product::class and !$service->canDeleteProduct($event->sender)) {
+            if (\Craft::$app->plugins->isPluginEnabled('commerce')) {
+                if ($class == Product::class and !$service->canDeleteProduct($event->element)) {
                     $event->authorized = false;
                 }
             }
