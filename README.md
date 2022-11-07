@@ -37,5 +37,6 @@ Admin users have all permissions on Craft, but not with this plugin. Admins **wi
 
 ## Known issues
 
-In Craft 4 the button delete on an index element page will still be active even if you're not allowed to delete. This is discussed [here](https://github.com/craftcms/cms/issues/11755) and cannot be fixed at the moment.  
-The deletion is prevented anyway, just the button isn't disabled.
+Prior to Craft 4.3 the button delete on an index element page will still be active even if you're not allowed to delete. This is discussed [here](https://github.com/craftcms/cms/issues/11755).  
+The deletion is prevented anyway, just the button isn't disabled.  
+This is working properly from Craft 4.3 on.
