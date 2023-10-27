@@ -133,7 +133,7 @@ class RestrictDeletion extends Plugin
     {
         $controller = \Craft::$app->controller;
 
-        return $controller->renderTemplate('restrict-deletion/settings', [
+        return $controller->renderTemplate('restrict-deletion/settings-new', [
             'plugin' => $this,
             'settings' => $this->settings,
             'policies' => [
