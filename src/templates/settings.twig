@@ -1,85 +1,154 @@
+{% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
 
-{{
-    forms.lightswitchField({
-        name: 'adminCanOverride',
-        label: 'Admins can skip all deletion policies'|t('restrict-deletion'),
-        on: settings.adminCanOverride,
-        fieldClass: 'first'
-    })
-}}
+{% set errors = settings.getErrors() %}
+{% set fullPageForm = true %}
+{% set title = plugin.name %}
+{% set docTitle = title ~ ' - ' ~ "Plugins"|t('app') %}
+{% set crumbs = [
+    { label: "Settings"|t('app'), url: url('settings') },
+    { label: "Plugins"|t('app'), url: url('settings/plugins') }
+] %}
 
-{{
-    forms.lightswitchField({
-        name: 'disableForFrontRequests',
-        label: "Don't apply restrictions to front end requests"|t('restrict-deletion'),
-        on: settings.disableForFrontRequests
-    })
-}}
-
-{{
-    forms.lightswitchField({
-        name: 'disableForConsoleRequests',
-        label: "Don't apply restrictions to console requests"|t('restrict-deletion'),
-        on: settings.disableForConsoleRequests
-    })
-}}
-
-<h2>{{ 'Restriction policies'|t('restrict-deletion') }}</h2>
-
-{% for section in craft.app.sections.allSections %}
-    {% if section.type != 'single' %}
-        {{
-            forms.selectField({
-                name: 'policies[' ~ section.uid ~ ']',
-                label: 'Entries in section {name}'|t('restrict-deletion', {name: section.name}),
-                value: settings.policies[section.uid] ?? 'none',
-                options: policies
-            })
-        }}
-    {% endif %}
-{% endfor %}
-
-{% for group in craft.app.categories.allGroups %}
-    {{
-        forms.selectField({
-            name: 'policies[' ~ group.uid ~ ']',
-            label: 'Categories in group {name}'|t('restrict-deletion', {name: group.name}),
-            value: settings.policies[group.uid] ?? 'none',
-            options: policies
-        })
-    }}
-{% endfor %}
-
-{% for volume in craft.app.volumes.allVolumes %}
-    {{
-        forms.selectField({
-            name: 'policies[' ~ volume.uid ~ ']',
-            label: 'Assets in volume {name}'|t('restrict-deletion', {name: volume.name}),
-            value: settings.policies[volume.uid] ?? 'none',
-            options: policies
-        })
-    }}
-{% endfor %}
+{% set tabs = {
+    main: {
+        label: 'Main settings'|t('restrict-deletion'),
+        url: '#settings-main'
+    },
+    sections: {
+        label: 'Sections'|t('restrict-deletion'),
+        url: '#settings-sections'
+    },
+    categories: {
+        label: 'Categories'|t('restrict-deletion'),
+        url: '#settings-categories'
+    },
+    volumes: {
+        label: 'Volumes'|t('restrict-deletion'),
+        url: '#settings-volumes'
+    },
+    users: {
+        label: 'Users'|t('restrict-deletion'),
+        url: '#settings-users'
+    }
+} %}
 
 {% if craft.app.plugins.isPluginInstalled('commerce') %}
-    {% for type in craft.commerce.productTypes.allProductTypes %}
-        {{
-            forms.selectField({
-                name: 'policies[' ~ type.uid ~ ']',
-                label: 'Product of type {name}'|t('restrict-deletion', {name: type.name}),
-                value: settings.policies[type.uid] ?? 'none',
-                options: policies
-            })
-        }}
-    {% endfor %}
+    {% set tabs = tabs|merge({
+        products: {
+            label: 'Products'|t('restrict-deletion'),
+            url: '#settings-products'
+        }
+    }) %}
 {% endif %}
 
-{{
-    forms.selectField({
-        name: 'userPolicy',
-        label: 'Users'|t('restrict-deletion'),
-        value: settings.userPolicy,
-        options: policies
-    })
-}}
+{% block content %}
+    {{ actionInput('plugins/save-plugin-settings') }}
+    {{ hiddenInput('pluginHandle', plugin.handle) }}
+    {{ redirectInput('settings') }}
+    {% namespace 'settings' %}
+        <div id="main">
+            {{
+                forms.lightswitchField({
+                    name: 'adminCanOverride',
+                    label: 'Admins can skip all deletion policies'|t('restrict-deletion'),
+                    on: settings.adminCanOverride,
+                    fieldClass: 'first'
+                })
+            }}
+
+            {{
+                forms.lightswitchField({
+                    name: 'disableForFrontRequests',
+                    label: "Don't apply restrictions to front end requests"|t('restrict-deletion'),
+                    on: settings.disableForFrontRequests
+                })
+            }}
+
+            {{
+                forms.lightswitchField({
+                    name: 'disableForConsoleRequests',
+                    label: "Don't apply restrictions to console requests"|t('restrict-deletion'),
+                    on: settings.disableForConsoleRequests
+                })
+            }}
+
+            {{
+                forms.selectField({
+                    name: 'defaultPolicy',
+                    label: 'Default policy'|t('restrict-deletion'),
+                    value: settings.defaultPolicy,
+                    instructions: 'Newly created sections/categories/users/volumes/products will use the default policy'|t('restrict-deletion'),
+                    options: policies|filter((v, k) => k != '')
+                })
+            }}
+        </div>
+
+        <div id="sections" class="hidden">
+            {% for section in craft.app.sections.allSections %}
+                {% if section.type != 'single' %}
+                    {{
+                        forms.selectField({
+                            name: 'policies[' ~ section.uid ~ ']',
+                            label: 'Entries in section {name}'|t('restrict-deletion', {name: section.name}),
+                            value: settings.policies[section.uid] ?? '',
+                            options: policies
+                        })
+                    }}
+                {% endif %}
+            {% endfor %}
+        </div>
+
+        <div id="categories" class="hidden">
+            {% for group in craft.app.categories.allGroups %}
+                {{
+                    forms.selectField({
+                        name: 'policies[' ~ group.uid ~ ']',
+                        label: 'Categories in group {name}'|t('restrict-deletion', {name: group.name}),
+                        value: settings.policies[group.uid] ?? '',
+                        options: policies
+                    })
+                }}
+            {% endfor %}
+        </div>
+
+        <div id="volumes" class="hidden">
+            {% for volume in craft.app.volumes.allVolumes %}
+                {{
+                    forms.selectField({
+                        name: 'policies[' ~ volume.uid ~ ']',
+                        label: 'Assets in volume {name}'|t('restrict-deletion', {name: volume.name}),
+                        value: settings.policies[volume.uid] ?? '',
+                        options: policies
+                    })
+                }}
+            {% endfor %}
+        </div>
+
+        <div id="users" class="hidden">
+            {{
+                forms.selectField({
+                    name: 'userPolicy',
+                    label: 'Users'|t('restrict-deletion'),
+                    value: settings.userPolicy,
+                    options: policies
+                })
+            }}
+        </div>
+
+        {% if craft.app.plugins.isPluginInstalled('commerce') %}
+            <div id="products" class="hidden">
+                {% for type in craft.commerce.productTypes.allProductTypes %}
+                    {{
+                        forms.selectField({
+                            name: 'policies[' ~ type.uid ~ ']',
+                            label: 'Product of type {name}'|t('restrict-deletion', {name: type.name}),
+                            value: settings.policies[type.uid] ?? '',
+                            options: policies
+                        })
+                    }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endnamespace %}
+{% endblock %}

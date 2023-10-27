@@ -1,5 +1,15 @@
 # ryssbowh/craft-restrict-deletions Changelog
 
+## 2.1.0 - 2023-10-27
+
+### Added
+
+- Added default policy
+
+### Changed
+
+- Reorganised the settings in tabs
+
 ## 2.0.4 - 2022-11-16
 
 ### Changed

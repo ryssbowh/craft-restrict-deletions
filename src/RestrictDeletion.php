@@ -23,7 +23,7 @@ class RestrictDeletion extends Plugin
      * @var Themes
      */
     public static $plugin;
-    
+
     /**
      * @inheritdoc
      */
@@ -127,28 +127,29 @@ class RestrictDeletion extends Plugin
     }
 
     /**
-     * @inheritDoc
+     * @inheritdoc
      */
-    protected function settingsHtml(): string
+    public function getSettingsResponse(): mixed
     {
-        return \Craft::$app->view->renderTemplate(
-            'restrict-deletion/settings',
-            [
-                'settings' => $this->getSettings(),
-                'policies' => [
-                    Restrict::POLICY_NONE => \Craft::t('restrict-deletion', 'Do not restrict'),
-                    Restrict::POLICY_ALL => \Craft::t('restrict-deletion', 'Restrict all'),
-                    Restrict::POLICY_NO_REVISIONS => \Craft::t('restrict-deletion', 'Restrict all but revisions'),
-                    Restrict::POLICY_NO_DRAFTS => \Craft::t('restrict-deletion', 'Restrict all but drafts'),
-                    Restrict::POLICY_NO_DRAFTS_OR_REVISIONS => \Craft::t('restrict-deletion', 'Restrict all but drafts and revisions')
-                ]
+        $controller = \Craft::$app->controller;
+
+        return $controller->renderTemplate('restrict-deletion/settings', [
+            'plugin' => $this,
+            'settings' => $this->settings,
+            'policies' => [
+                '' => \Craft::t('restrict-deletion', 'Use default'),
+                Restrict::POLICY_NONE => \Craft::t('restrict-deletion', 'Do not restrict'),
+                Restrict::POLICY_ALL => \Craft::t('restrict-deletion', 'Restrict all'),
+                Restrict::POLICY_NO_REVISIONS => \Craft::t('restrict-deletion', 'Restrict all but revisions'),
+                Restrict::POLICY_NO_DRAFTS => \Craft::t('restrict-deletion', 'Restrict all but drafts'),
+                Restrict::POLICY_NO_DRAFTS_OR_REVISIONS => \Craft::t('restrict-deletion', 'Restrict all but drafts and revisions')
             ]
-        );
+        ]);
     }
 
     /**
      * Add permissions to each sections/category groups/volumes and users to skip the restrictions
-     * 
+     *
      * @param  array $array
      * @return array
      */
@@ -168,13 +169,13 @@ class RestrictDeletion extends Plugin
                     if (isset($newPerm['permissions'][$name]['nested']['deleteEntries:' . $uid])) {
                         $newPerm['permissions'][$name]['nested']['deleteEntries:' . $uid]['nested']['ignoreDeletionRestriction:' . $uid] = $ignorePermission;
                     }
-                } else if ($subname == 'viewAssets') {
+                } elseif ($subname == 'viewAssets') {
                     $newPerm['permissions'][$name]['nested']['deleteAssets:' . $uid]['nested']['ignoreDeletionRestriction:' . $uid] = $ignorePermission;
-                } else if ($subname == 'viewCategories') {
+                } elseif ($subname == 'viewCategories') {
                     $newPerm['permissions'][$name]['nested']['deleteCategories:' . $uid]['nested']['ignoreDeletionRestriction:' . $uid] = $ignorePermission;
-                } else if ($subname == 'deleteUsers') {
+                } elseif ($subname == 'deleteUsers') {
                     $newPerm['permissions']['deleteUsers']['nested']['ignoreDeletionRestriction:users'] = $ignorePermission;
-                } else if ($subname == 'commerce-editProductType') {
+                } elseif ($subname == 'commerce-editProductType') {
                     $newPerm['permissions'][$name]['nested']['commerce-deleteProducts:' . $uid]['nested']['ignoreDeletionRestriction:' . $uid] = $ignorePermission;
                 }
             }

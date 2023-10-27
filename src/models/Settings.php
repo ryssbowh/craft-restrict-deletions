@@ -6,43 +6,27 @@ use Ryssbowh\RestrictDeletion\services\Restrict;
 use craft\base\Model;
 
 class Settings extends Model
-{   
-    /**
-     * @var array
-     */
-    public $policies = [];
-
-    /**
-     * @var string
-     */
-    public $userPolicy = Restrict::POLICY_NONE;
-
-    /**
-     * @var boolean
-     */
-    public $adminCanOverride = false;
-
-    /**
-     * @var boolean
-     */
-    public $disableForFrontRequests = false;
-
-    /**
-     * @var boolean
-     */
-    public $disableForConsoleRequests = false;
+{
+    public array $policies = [];
+    public string $userPolicy = '';
+    public string $defaultPolicy = Restrict::POLICY_NONE;
+    public bool $adminCanOverride = false;
+    public bool $disableForFrontRequests = false;
+    public bool $disableForConsoleRequests = false;
 
     /**
      * Get the policy for a uid (section, category group, volume or 'users')
-     * 
+     *
      * @param  string $uid
      * @return string
      */
     public function getPolicy(string $uid): string
     {
         if ($uid == 'users') {
-            return $this->userPolicy;
+            $policy = $this->userPolicy;
+        } else {
+            $policy = $this->policies[$uid] ?? null;
         }
-        return $this->policies[$uid] ?? Restrict::POLICY_NONE;
+        return $policy ?: $this->defaultPolicy;
     }
 }
