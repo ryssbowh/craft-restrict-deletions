@@ -2,8 +2,11 @@
 
 namespace Ryssbowh\RestrictDeletion;
 
+use Ryssbowh\RestrictDeletion\elements\actions\ViewUsage;
 use Ryssbowh\RestrictDeletion\models\Settings;
 use Ryssbowh\RestrictDeletion\services\Restrict;
+use Ryssbowh\RestrictDeletion\services\Usage;
+use Ryssbowh\RestrictDeletion\utilities\ElementUsageUtility;
 use craft\base\Element;
 use craft\base\Model;
 use craft\base\Plugin;
@@ -15,6 +18,7 @@ use craft\elements\User;
 use craft\helpers\ElementHelper;
 use craft\services\Elements;
 use craft\services\UserPermissions;
+use craft\services\Utilities;
 use yii\base\Event;
 
 class RestrictDeletion extends Plugin
@@ -41,6 +45,7 @@ class RestrictDeletion extends Plugin
         $this->registerServices();
         $this->registerElementEvents();
         $this->registerPermissions();
+        $this->registerUtilities();
     }
 
     /**
@@ -96,6 +101,19 @@ class RestrictDeletion extends Plugin
                 }
             }
         });
+        Event::on(Element::class, Element::EVENT_REGISTER_ACTIONS, function (Event $event) {
+            $event->actions[] = ViewUsage::class;
+        });
+    }
+
+    /**
+     * Register utilities
+     */
+    protected function registerUtilities()
+    {
+        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function (Event $event) {
+            $event->types[] = ElementUsageUtility::class;
+        });
     }
 
     /**
@@ -114,7 +132,8 @@ class RestrictDeletion extends Plugin
     protected function registerServices()
     {
         $this->setComponents([
-            'restrict' => Restrict::class
+            'restrict' => Restrict::class,
+            'usage' => Usage::class,
         ]);
     }
 

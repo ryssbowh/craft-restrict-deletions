@@ -1,0 +1,85 @@
+{% import "_includes/forms" as forms %}
+
+{% if error %}
+    <p class="error">{{ error }}</p>
+{% endif %}
+<form method="get" action="?" class="usage-form invisible">
+    <div class="flex flex-start">
+        {{ forms.selectField({
+            name: 'type',
+            label: 'Type',
+            options: types|map(c => c.name),
+            id: 'element-type',
+            value: type
+        }) }}
+        {% for index, type in types %}
+            {{ forms.elementSelectField({
+                name: index,
+                label: type.name,
+                elementType: type.class,
+                single: true,
+                elements: (selected and selected is instance of(type.class)) ? [selected] : [],
+                id: 'select-' ~ index
+            }) }}
+        {% endfor %}
+    </div>
+    <input type="submit" class="btn submit" value="{{ 'View Usage'|t('restrict-deletion') }}">
+</form>
+
+{% macro list(elements, suffix = '') %}
+    {% for element in elements %}
+        <li>{{ element.displayName() }}: <a href="{{ element.cpEditUrl }}" target="_blank">
+            <span class="usage-status status {{ element.status }}" role="img"></span>
+            {{ element is instance of('craft\\elements\\User') ? element.fullName : element.title }}</a> {% if suffix %}({{ suffix }}){% endif %}
+        </li>
+    {% endfor %}
+{% endmacro %}
+
+{% if elements is array %}
+    {% if not elements|length %}
+        <h2>{{ 'This {element} is not used anywhere'|t('restrict-deletion', {element: selected.displayName}) }}</h2>
+    {% else %}
+        <h2>{{ 'This {element} is used in:'|t('restrict-deletion', {element: selected.displayName}) }}</h2>
+        {% for item in elements %}
+            <p><b>{{ 'Site {site}'|t('restrict-deletion', {site: item.site.name}) }}:</b></p>
+            <ul>
+                {{ _self.list(item.elements.direct ?? []) }}
+                {{ _self.list(item.elements.matrix ?? [], 'Matrix block'|t('restrict-deletion')) }}
+                {{ _self.list(item.elements.superTable ?? [], 'Super table block'|t('restrict-deletion')) }}
+                {{ _self.list(item.elements.neo ?? [], 'Neo block'|t('restrict-deletion')) }}
+            </ul>
+        {% endfor %}
+    {% endif %}
+{% endif %}
+
+{% css %}
+    .usage-form .field {
+        margin: 0 20px 20px 0;
+    }
+    .usage-status {
+        margin-right: 0 !important;
+    }
+{% endcss %}
+
+{% js %}
+    let types = {{ types|json_encode|raw }};
+    let keys = Object.keys(types);
+    showSelect();
+    $('#element-type').on('change', showSelect);
+    function showSelect() {
+        let selected = $('#element-type').val();
+        for (var i = 0; i < keys.length; i++) {
+            let field = $('#select-' + keys[i]);
+            if (keys[i] != selected) {
+                let type = types[keys[i]];
+                let selector = field.data('elementSelect');
+                selector.removeElements(selector.getElements());
+                selector.getElements().remove();
+                field.closest('.field').addClass('hidden');
+            } else {
+                field.closest('.field').removeClass('hidden');
+            }
+        }
+    }
+    $('.usage-form').removeClass('invisible');
+{% endjs %}

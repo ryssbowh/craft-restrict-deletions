@@ -1,5 +1,12 @@
 # ryssbowh/craft-restrict-deletions Changelog
 
+## 2.2.0 - 2023-11-22
+
+### Added
+
+- Utility to view where an element is used (directly or through Matrix/Neo/Super table blocks)
+- Action on list views to view an element usage
+
 ## 2.1.0 - 2023-10-27
 
 ### Added

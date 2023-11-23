@@ -1,13 +1,15 @@
 {
     "name": "ryssbowh/craft-restrict-deletions",
-    "description": "Restrict deletion of elements when they are referenced in other elements",
+    "description": "View elements relations and restrict deletion of elements when they are referenced in other elements",
     "type": "craft-plugin",
     "keywords": [
         "cms",
         "craftcms",
         "restrict",
         "delete",
-        "deletion"
+        "deletion",
+        "related",
+        "relation"
     ],
     "license": "MIT",
     "authors": [
@@ -28,8 +30,8 @@
         "name": "Restrict element deletions",
         "handle": "restrict-deletion",
         "developer": "The Web Puzzlers",
-        "developerUrl": "https://puzzlers.run",
-        "documentationUrl": "https://puzzlers.run/plugins/restrict-element-deletions/2.x",
+        "developerUrl": "https://www.webpuzzlers.co.uk",
+        "documentationUrl": "https://www.webpuzzlers.co.uk/plugins/restrict-element-deletions/2.x",
         "class": "Ryssbowh\\RestrictDeletion\\RestrictDeletion"
     }
 }

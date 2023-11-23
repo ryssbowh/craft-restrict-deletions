@@ -10,4 +10,4 @@ The idea is taken from the plugin [Restrict Asset Delete](https://github.com/la-
 
 ## Documentation
 
-[Plugin documentation website](https://puzzlers.run/plugins/restrict-element-deletions/2.x)
+[Plugin documentation website](https://www.webpuzzlers.co.uk/plugins/restrict-element-deletions/2.x)
