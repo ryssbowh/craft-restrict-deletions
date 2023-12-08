@@ -1,5 +1,11 @@
 # ryssbowh/craft-restrict-deletions Changelog
 
+## 2.2.1 - 2023-12-08
+
+### Added
+
+- Usage integration to `verbb/navigation` [#1](https://github.com/ryssbowh/craft-restrict-deletions/issues/1)
+
 ## 2.2.0 - 2023-11-22
 
 ### Added

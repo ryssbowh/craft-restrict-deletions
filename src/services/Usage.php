@@ -13,6 +13,7 @@ use craft\elements\Entry;
 use craft\elements\MatrixBlock;
 use craft\elements\User;
 use craft\feedme\fields\Assets;
+use verbb\navigation\elements\Node;
 use verbb\supertable\elements\SuperTableBlockElement;
 
 /**
@@ -68,6 +69,9 @@ class Usage extends Component
         $related = array_merge($related, User::find()->relatedTo(['targetElement' => $element])->anyStatus()->all());
         if (\Craft::$app->plugins->isPluginEnabled('commerce')) {
             $related = array_merge($related, Product::find()->relatedTo(['targetElement' => $element])->site('*')->anyStatus()->all());
+        }
+        if (\Craft::$app->plugins->isPluginEnabled('navigation')) {
+            $related = array_merge($related, Node::find()->relatedTo(['targetElement' => $element])->site('*')->anyStatus()->all());
         }
         return $related;
     }

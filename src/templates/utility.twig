@@ -28,10 +28,18 @@
 
 {% macro list(elements, suffix = '') %}
     {% for element in elements %}
-        <li>{{ element.displayName() }}: <a href="{{ element.cpEditUrl }}" target="_blank">
-            <span class="usage-status status {{ element.status }}" role="img"></span>
-            {{ element is instance of('craft\\elements\\User') ? element.fullName : element.title }}</a> {% if suffix %}({{ suffix }}){% endif %}
-        </li>
+        {% if element is instance of('verbb\\navigation\\elements\\Node') %}
+            <li>{{ element.displayName() }}: <span>
+                <span class="usage-status status {{ element.status }}" role="img"></span>
+                {{ element.title }} {{ 'in Nav '|t }} <a href="{{ cpUrl('navigation/navs/build/' ~ element.nav.id ~ '?site=' ~ element.site.handle) }}" target="_blank">{{ element.nav.name }}</a>
+                </span>
+            </li>
+        {% else %}
+            <li>{{ element.displayName() }}: <a href="{{ element.cpEditUrl }}" target="_blank">
+                <span class="usage-status status {{ element.status }}" role="img"></span>
+                {{ element is instance of('craft\\elements\\User') ? element.fullName : element.title }}</a> {% if suffix %}({{ suffix }}){% endif %}
+            </li>
+        {% endif %}
     {% endfor %}
 {% endmacro %}
 
