@@ -85,7 +85,7 @@
         </div>
 
         <div id="sections" class="hidden">
-            {% for section in craft.app.sections.allSections %}
+            {% for section in craft.app.entries.allSections %}
                 {% if section.type != 'single' %}
                     {{
                         forms.selectField({

@@ -14,26 +14,29 @@ use craft\elements\User;
 
 class Restrict extends Component
 {
-    const POLICY_NONE = 'none';
-    const POLICY_ALL = 'all';
-    const POLICY_NO_DRAFTS = 'noDrafts';
-    const POLICY_NO_REVISIONS = 'noRevisions';
-    const POLICY_NO_DRAFTS_OR_REVISIONS = 'noRevisionsOrDrafts';
+    public const POLICY_NONE = 'none';
+    public const POLICY_ALL = 'all';
+    public const POLICY_NO_DRAFTS = 'noDrafts';
+    public const POLICY_NO_REVISIONS = 'noRevisions';
+    public const POLICY_NO_DRAFTS_OR_REVISIONS = 'noRevisionsOrDrafts';
 
     /**
      * Can an entry be deleted
-     * 
+     *
      * @param  Entry $entry
      * @return bool
      */
     public function canDeleteEntry(Entry $entry): bool
     {
+        if (!$entry->section) {
+            return true;
+        }
         return $this->canDeleteElement($entry, $entry->section->uid);
     }
 
     /**
      * Can an user be deleted
-     * 
+     *
      * @param  User $user
      * @return bool
      */
@@ -44,7 +47,7 @@ class Restrict extends Component
 
     /**
      * Can an asset be deleted
-     * 
+     *
      * @param  Asset $asset
      * @return bool
      */
@@ -55,7 +58,7 @@ class Restrict extends Component
 
     /**
      * Can an entry be deleted
-     * 
+     *
      * @param  Category $category
      * @return bool
      */
@@ -66,7 +69,7 @@ class Restrict extends Component
 
     /**
      * Can a product be deleted
-     * 
+     *
      * @param  Product $category
      * @return bool
      */
@@ -77,7 +80,7 @@ class Restrict extends Component
 
     /**
      * Can an element be deleted
-     * 
+     *
      * @param  Element $element
      * @param  string  $policyUid
      * @return bool
@@ -96,7 +99,7 @@ class Restrict extends Component
             if ($settings->adminCanOverride) {
                 return true;
             }
-        } else if ($user->checkPermission('ignoreDeletionRestriction:' . $policyUid)) {
+        } elseif ($user->checkPermission('ignoreDeletionRestriction:' . $policyUid)) {
             return true;
         }
         $policy = $settings->getPolicy($policyUid);
@@ -104,8 +107,8 @@ class Restrict extends Component
     }
 
     /**
-     * Is an element related to other element according to a policy 
-     * 
+     * Is an element related to other element according to a policy
+     *
      * @param  Element $element
      * @param  string  $policy
      * @return bool

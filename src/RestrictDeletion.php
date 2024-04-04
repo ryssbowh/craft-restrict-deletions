@@ -111,7 +111,7 @@ class RestrictDeletion extends Plugin
      */
     protected function registerUtilities()
     {
-        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES, function (Event $event) {
+        Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITIES, function (Event $event) {
             $event->types[] = ElementUsageUtility::class;
         });
     }

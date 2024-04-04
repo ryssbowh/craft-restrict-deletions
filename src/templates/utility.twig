@@ -27,6 +27,7 @@
 </form>
 
 {% macro list(elements, suffix = '') %}
+    {% set usage = craft.app.plugins.getPlugin('restrict-deletion').usage %}
     {% for element in elements %}
         {% if element is instance of('verbb\\navigation\\elements\\Node') %}
             <li>{{ element.displayName() }}: <span>
@@ -35,9 +36,17 @@
                 </span>
             </li>
         {% else %}
+            {% set child = false %}
+            {% if element.primaryOwnerId %}
+                {% set field = element.field %}
+                {% set element = usage.getPrimaryOwner(element) %}
+                {% set child = true %}
+            {% endif %}
             <li>{{ element.displayName() }}: <a href="{{ element.cpEditUrl }}" target="_blank">
                 <span class="usage-status status {{ element.status }}" role="img"></span>
-                {{ element is instance of('craft\\elements\\User') ? element.fullName : element.title }}</a> {% if suffix %}({{ suffix }}){% endif %}
+                {{ element is instance of('craft\\elements\\User') ? element.fullName : element.title }}</a>
+                {% if suffix %}({{ suffix }}){% endif %}
+                {% if child %}({{ 'as child of {child}'|t('restrict-deletion', {child: field.name}) }}){% endif %}
             </li>
         {% endif %}
     {% endfor %}
@@ -52,8 +61,6 @@
             <p><b>{{ 'Site {site}'|t('restrict-deletion', {site: item.site.name}) }}:</b></p>
             <ul>
                 {{ _self.list(item.elements.direct ?? []) }}
-                {{ _self.list(item.elements.matrix ?? [], 'Matrix block'|t('restrict-deletion')) }}
-                {{ _self.list(item.elements.superTable ?? [], 'Super table block'|t('restrict-deletion')) }}
                 {{ _self.list(item.elements.neo ?? [], 'Neo block'|t('restrict-deletion')) }}
             </ul>
         {% endfor %}

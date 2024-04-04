@@ -43,14 +43,8 @@ class Usage extends Component
         if ($elems = $this->getDirectRelated($asset)) {
             $elements['direct'] = $elems;
         }
-        if ($elems = $this->getMatrixBlocksRelated($asset)) {
-            $elements['matrix'] = $elems;
-        }
         if ($elems = $this->getNeoBlocksRelated($asset)) {
             $elements['neo'] = $elems;
-        }
-        if ($elems = $this->getSuperTableBlocksRelated($asset)) {
-            $elements['superTable'] = $elems;
         }
         return $elements;
     }
@@ -71,7 +65,7 @@ class Usage extends Component
             $related = array_merge($related, Product::find()->relatedTo(['targetElement' => $element])->site('*')->anyStatus()->all());
         }
         if (\Craft::$app->plugins->isPluginEnabled('navigation')) {
-            $related = array_merge($related, Node::find()->relatedTo(['targetElement' => $element])->site('*')->anyStatus()->all());
+            $related = array_merge($related, Node::find()->elementId($element->id)->site('*')->anyStatus()->all());
         }
         return $related;
     }
@@ -94,34 +88,18 @@ class Usage extends Component
     }
 
     /**
-     * Get all elements related to an element through super table blocks
+     * Get the primary owner for an element
      *
      * @param  Element $element
-     * @return array
+     * @return Element
+     * @since 3.0.0
      */
-    public function getSuperTableBlocksRelated(Element $element): array
+    public function getPrimaryOwner(Element $element): Element
     {
-        if (!\Craft::$app->plugins->isPluginEnabled('super-table')) {
-            return [];
+        if (!$element->primaryOwnerId) {
+            return $element;
         }
-        $blocks = SuperTableBlockElement::find()->relatedTo(['targetElement' => $element])->anyStatus()->site('*')->all();
-        return array_map(function ($block) {
-            return $this->getOwner($block);
-        }, $blocks);
-    }
-
-    /**
-     * Get all elements related to an element through matrix blocks
-     *
-     * @param  Element $element
-     * @return array
-     */
-    public function getMatrixBlocksRelated(Element $element): array
-    {
-        $blocks = MatrixBlock::find()->relatedTo(['targetElement' => $element])->anyStatus()->site('*')->all();
-        return array_map(function ($block) {
-            return $this->getOwner($block);
-        }, $blocks);
+        return $this->getPrimaryOwner($element->primaryOwner);
     }
 
     /**
