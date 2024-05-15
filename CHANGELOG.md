@@ -1,5 +1,11 @@
 # ryssbowh/craft-restrict-deletions Changelog
 
+## 2.2.2 - 2024-05-15
+
+### Fixed
+
+- Issue with Postgresql [#2](https://github.com/ryssbowh/craft-restrict-deletions/issues/2)
+
 ## 2.2.1 - 2023-12-08
 
 ### Added
@@ -55,4 +61,5 @@
 ## 2.0.0 - 2022-08-12
 
 ### Added
+
 - First version
