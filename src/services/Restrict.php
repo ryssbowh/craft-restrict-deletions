@@ -7,6 +7,7 @@ use craft\base\Component;
 use craft\base\Element;
 use craft\commerce\elements\Product;
 use craft\db\Query;
+use craft\db\Table;
 use craft\elements\Asset;
 use craft\elements\Category;
 use craft\elements\Entry;
@@ -120,14 +121,14 @@ class Restrict extends Component
         }
         $query = (new Query())
             ->select(['relations.id'])
-            ->from(['{{%relations}}'])
-            ->leftJoin('{{%elements}}', 'elements.id = relations.sourceId')
+            ->from(['relations' => Table::RELATIONS])
+            ->leftJoin(['elements' => Table::ELEMENTS], '[[elements.id]] = [[relations.sourceId]]')
             ->where(['targetId' => $element->id]);
         if ($policy == self::POLICY_NO_REVISIONS or $policy == self::POLICY_NO_DRAFTS_OR_REVISIONS) {
-            $query->andWhere('elements.revisionId is NULL');
+            $query->andWhere('[[elements.revisionId]] is NULL');
         }
         if ($policy == self::POLICY_NO_DRAFTS or $policy == self::POLICY_NO_DRAFTS_OR_REVISIONS) {
-            $query->andWhere('elements.draftId is NULL');
+            $query->andWhere('[[elements.draftId]] is NULL');
         }
         return $query->exists();
     }
