@@ -13,6 +13,7 @@ class Settings extends Model
     public bool $adminCanOverride = false;
     public bool $disableForFrontRequests = false;
     public bool $disableForConsoleRequests = false;
+    public bool $showOnSidebar = false;
 
     /**
      * Get the policy for a uid (section, category group, volume or 'users')

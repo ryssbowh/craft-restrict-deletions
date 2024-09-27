@@ -46,6 +46,7 @@ class RestrictDeletion extends Plugin
         $this->registerElementEvents();
         $this->registerPermissions();
         $this->registerUtilities();
+        $this->registerSidebarEvents();
     }
 
     /**
@@ -104,6 +105,53 @@ class RestrictDeletion extends Plugin
         Event::on(Element::class, Element::EVENT_REGISTER_ACTIONS, function (Event $event) {
             $event->actions[] = ViewUsage::class;
         });
+    }
+
+    /**
+     * Register sidebar events
+     * 
+     * @since 2.3.0
+     */
+    protected function registerSidebarEvents()
+    {
+        if (!$this->getSettings()->showOnSidebar) {
+            return;
+        }
+        \Craft::$app->view->hook('cp.users.edit.details', function (array &$context) {
+            return $this->prepareSidebar($context['user']);
+        });
+        \Craft::$app->view->hook('cp.commerce.product.edit.details', function (array &$context) {
+            return $this->prepareSidebar($context['product']);
+        });
+        Event::on(Entry::class, Element::EVENT_DEFINE_SIDEBAR_HTML, function (Event $e) {
+            $e->html .= $this->prepareSidebar($e->sender);
+        });
+        Event::on(Category::class, Element::EVENT_DEFINE_SIDEBAR_HTML, function (Event $e) {
+            $e->html .= $this->prepareSidebar($e->sender);
+        });
+        Event::on(Asset::class, Element::EVENT_DEFINE_SIDEBAR_HTML, function (Event $e) {
+            $e->html .= $this->prepareSidebar($e->sender);
+        });
+    }
+
+    /**
+     * Prepare the variables to display in the sidebar
+     * 
+     * @param Element $element
+     * @return string
+     * @since 2.3.0
+     */
+    protected function prepareSidebar(Element $element): string
+    {
+        $related = RestrictDeletion::$plugin->usage->getRelated($element);
+        if (!$related) {
+            return '';
+        }
+        $elements = RestrictDeletion::$plugin->usage->prepForView($related);
+        return \Craft::$app->view->renderTemplate('restrict-deletion/sidebar', [
+            'elements' => $elements,
+            'selected' => $element
+        ]);
     }
 
     /**

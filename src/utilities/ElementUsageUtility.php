@@ -55,22 +55,8 @@ class ElementUsageUtility extends Utility
             $error = $e->getMessage();
         }
         if ($selected) {
-            $elements = [];
-            foreach (RestrictDeletion::$plugin->usage->getRelated($selected) as $index => $elems) {
-                foreach ($elems as $element) {
-                    $site = $element->site;
-                    if (!isset($elements[$site->id])) {
-                        $elements[$site->id] = [
-                            'site' => $site,
-                            'elements' => []
-                        ];
-                    }
-                    if (!isset($elements[$site->id]['elements'][$index])) {
-                        $elements[$site->id]['elements'][$index] = [];
-                    }
-                    $elements[$site->id]['elements'][$index][] = $element;
-                }
-            }
+            $related = RestrictDeletion::$plugin->usage->getRelated($selected);
+            $elements = RestrictDeletion::$plugin->usage->prepForView($related);
         }
         $types = [
             'entry' => [

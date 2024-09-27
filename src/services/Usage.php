@@ -56,6 +56,34 @@ class Usage extends Component
     }
 
     /**
+     * Prepare an array of elements to be displayed
+     * 
+     * @param array $elements
+     * @return array
+     * @since 2.3.0
+     */
+    public function prepForView(array $elements): array
+    {
+        $out = [];
+        foreach ($elements as $index => $elems) {
+            foreach ($elems as $element) {
+                $site = $element->site;
+                if (!isset($out[$site->id])) {
+                    $out[$site->id] = [
+                        'site' => $site,
+                        'elements' => []
+                    ];
+                }
+                if (!isset($out[$site->id]['elements'][$index])) {
+                    $out[$site->id]['elements'][$index] = [];
+                }
+                $out[$site->id]['elements'][$index][] = $element;
+            }
+        }
+        return $out;
+    }
+
+    /**
      * Get all elements directly related to an element
      *
      * @param  Element $element

@@ -1,5 +1,11 @@
 # ryssbowh/craft-restrict-deletions Changelog
 
+## 2.3.0 - 2024-09-27
+
+### Added
+
+- Ability to display related elements in each element's sidebar
+
 ## 2.2.2 - 2024-05-15
 
 ### Fixed

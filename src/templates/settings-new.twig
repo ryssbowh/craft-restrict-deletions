@@ -82,6 +82,14 @@
                     options: policies|filter((v, k) => k != '')
                 })
             }}
+
+            {{
+                forms.lightswitchField({
+                    name: 'showOnSidebar',
+                    label: "Show related elements in element's sidebar"|t('restrict-deletion'),
+                    on: settings.showOnSidebar
+                })
+            }}
         </div>
 
         <div id="sections" class="hidden">
