@@ -3,6 +3,7 @@
 namespace Ryssbowh\RestrictDeletion;
 
 use Ryssbowh\RestrictDeletion\elements\actions\ViewUsage;
+use Ryssbowh\RestrictDeletion\events\BeforeRenderSidebar;
 use Ryssbowh\RestrictDeletion\models\Settings;
 use Ryssbowh\RestrictDeletion\services\Restrict;
 use Ryssbowh\RestrictDeletion\services\Usage;
@@ -32,6 +33,8 @@ class RestrictDeletion extends Plugin
      * @inheritdoc
      */
     public bool $hasCpSettings = true;
+
+    public const EVENT_BEFORE_RENDER_SIDEBAR = 'event-before-render-sidebar';
 
     /**
      * inheritDoc
@@ -143,13 +146,17 @@ class RestrictDeletion extends Plugin
      */
     protected function prepareSidebar(Element $element): string
     {
-        $related = RestrictDeletion::$plugin->usage->getRelated($element);
+        $related = RestrictDeletion::$plugin->usage->getRelated($element, $element->site->handle);
         if (!$related) {
             return '';
         }
         $elements = RestrictDeletion::$plugin->usage->prepForView($related);
-        return \Craft::$app->view->renderTemplate('restrict-deletion/sidebar', [
-            'elements' => $elements,
+        $event = new BeforeRenderSidebar([
+            'elements' => $elements
+        ]);
+        $this->trigger(self::EVENT_BEFORE_RENDER_SIDEBAR, $event);
+        return \Craft::$app->view->renderTemplate($event->template, [
+            'elements' => $event->elements,
             'selected' => $element
         ]);
     }

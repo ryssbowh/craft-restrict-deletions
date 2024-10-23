@@ -1,5 +1,11 @@
 # ryssbowh/craft-restrict-deletions Changelog
 
+## 2.3.1 - 2024-10-23
+
+### Added
+
+- Added the event `RestrictDeletion::EVENT_BEFORE_RENDER_SIDEBAR` to customize the sidebar rendering
+
 ## 2.3.0 - 2024-09-27
 
 ### Added
